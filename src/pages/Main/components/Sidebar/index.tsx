@@ -1,27 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 
 import ConnectWalletButton from "./ConnectWalletButton";
-import { Wrapper, Logo, Title, MenuItem } from "./styled";
-import { HomeIcon } from "./SvgIcons";
+import { Wrapper, Logo, MenuItem } from "./styled";
 import Menus from "./menus";
 import { MenuType } from "./types";
 
 const Sidebar: React.FC = () => {
+  const [selectedMenuItem, setSelectedMenuItem] = useState<string>(Menus[0].id);
+
   const handleClickMenuItem = (menuItem: MenuType) => {
     if (menuItem.link) {
       window.open(menuItem.link);
+    } else {
+      setSelectedMenuItem(menuItem.id);
     }
   };
 
   return (
     <Wrapper>
       <Logo />
-      <Title>
-        <HomeIcon />
-        Dashboard
-      </Title>
       {Menus.map((menuItem: MenuType, index: number) => (
-        <MenuItem onClick={() => handleClickMenuItem(menuItem)} key={index}>
+        <MenuItem
+          selected={selectedMenuItem === menuItem.id}
+          onClick={() => handleClickMenuItem(menuItem)}
+          key={index}
+        >
           <menuItem.icon />
           {menuItem.title}
         </MenuItem>
