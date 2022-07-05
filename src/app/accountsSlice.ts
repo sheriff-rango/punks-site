@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type AccountsType = {
-  keplr: any;
+  keplr: { address: string; label: string } | null;
   contracts: { [key: string]: any };
 };
 

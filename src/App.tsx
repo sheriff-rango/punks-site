@@ -1,5 +1,4 @@
 import React from "react";
-import { Router } from "react-router-dom";
 
 import { createBrowserHistory } from "history";
 import "@shoelace-style/shoelace/dist/themes/light.css";
@@ -10,6 +9,7 @@ import { WalletManagerProvider, WalletType } from "@noahsaso/cosmodal";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import junoPresets from "./constant/junoPresets";
+import Main from "./pages/Main";
 
 const history = createBrowserHistory();
 
@@ -31,20 +31,19 @@ function App() {
       }}
     >
       <div className="main">
-        <Router history={history}>
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            theme="colored"
-          />
-        </Router>
+        <Main />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          theme="colored"
+        />
       </div>
     </WalletManagerProvider>
   );
