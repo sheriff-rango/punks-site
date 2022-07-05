@@ -64,3 +64,11 @@ export const AirDropImage = styled.div`
   width: 197px;
   height: 197px;
 `;
+
+export const TokenPricesContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 130px;
+  margin-top: 31px;
+`;

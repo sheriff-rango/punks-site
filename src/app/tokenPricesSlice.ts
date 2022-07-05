@@ -26,8 +26,7 @@ export enum TokenHistoryPeriod {
 }
 
 export type TokenPricesType = {
-  current: TokenPriceType;
-  previous: TokenPriceType;
+  price: TokenPriceType;
   priceHistory: TokenHistoryItemType[];
   historyOption: {
     historyPeriod: TokenHistoryPeriod;
@@ -47,8 +46,7 @@ const getFromFunctions: { [key: number]: () => number } = {
 };
 
 let initialState: TokenPricesType = {
-  current: { punk: null, juno: null },
-  previous: { punk: null, juno: null },
+  price: { punk: null, juno: null },
   priceHistory: [],
   historyOption: {
     historyPeriod: TokenHistoryPeriod.WEEKLY,
@@ -59,30 +57,15 @@ let initialState: TokenPricesType = {
 export const fetchTokenPrices = createAsyncThunk(
   "tokenPrices/fetchTokenPrice",
   async () => {
-    const now = moment(new Date()).format("YYYY-MM-DD");
-    const yesterday = moment(new Date().setDate(new Date().getDate() - 1));
     const currentPunkPrice = await getQuery(
-      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.punk}?date=${now}`
+      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.punk}`
     );
     const currentJunoPrice = await getQuery(
-      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.juno}?date=${now}`
-    );
-
-    const previousPunkPrice = await getQuery(
-      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.punk}?date=${yesterday}`
-    );
-    const previousJunoPrice = await getQuery(
-      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.juno}?date=${yesterday}`
+      `https://api.coingecko.com/api/v3/coins/${TOKEN_ID.juno}`
     );
     return {
-      current: {
-        juno: currentJunoPrice,
-        punk: currentPunkPrice,
-      },
-      previous: {
-        juno: previousJunoPrice,
-        punk: previousPunkPrice,
-      },
+      juno: currentJunoPrice,
+      punk: currentPunkPrice,
     };
   }
 );
@@ -117,8 +100,7 @@ export const tokenPricesSlice = createSlice({
   initialState,
   reducers: {
     clearTokenPrice: (state, action: PayloadAction) => {
-      state.current = { punk: null, juno: null };
-      state.previous = { punk: null, juno: null };
+      state.price = { punk: null, juno: null };
       state.priceHistory = [];
     },
     setHistoryOption: (
@@ -133,9 +115,8 @@ export const tokenPricesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTokenPrices.fulfilled, (state, action) => {
-      const { current, previous } = action.payload;
-      state.current = current;
-      state.previous = previous;
+      const { juno, punk } = action.payload;
+      state.price = { juno, punk };
     });
     builder.addCase(fetchTokenPriceHistory.fulfilled, (state, action) => {
       state.priceHistory = action.payload;

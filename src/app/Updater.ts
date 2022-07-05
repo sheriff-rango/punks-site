@@ -4,7 +4,10 @@ import { useAppDispatch, useAppSelector } from "./hooks";
 import { fetchTokenPriceHistory, fetchTokenPrices } from "./tokenPricesSlice";
 
 export default function Updater(): null {
-  const { refresh } = useRefresh();
+  const {
+    // refresh,
+    priceRefresh,
+  } = useRefresh();
   const dispatch = useAppDispatch();
   const tokenPricesHistoryOption = useAppSelector(
     (state) => state.tokenPrices.historyOption
@@ -22,12 +25,12 @@ export default function Updater(): null {
         token: tokenPricesHistoryOption.priceType,
       })
     );
-  }, [dispatch, refresh, tokenPricesHistoryOption]);
+  }, [dispatch, priceRefresh, tokenPricesHistoryOption]);
 
   // Current & Previous Token Price Updater
   useEffect(() => {
     dispatch(fetchTokenPrices());
-  }, [dispatch, refresh]);
+  }, [dispatch, priceRefresh]);
 
   return null;
 }

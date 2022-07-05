@@ -1,4 +1,5 @@
 import React from "react";
+import TokenPrice from "../../../../components/TokenPrice";
 import {
   Wrapper,
   AirDropContainer,
@@ -7,6 +8,7 @@ import {
   AirDropSubTitle,
   ClaimButton,
   AirDropImage,
+  TokenPricesContainer,
 } from "./styled";
 
 const Dashboard: React.FC = () => {
@@ -23,6 +25,10 @@ const Dashboard: React.FC = () => {
         </AirDropContent>
         <AirDropImage />
       </AirDropContainer>
+      <TokenPricesContainer>
+        <TokenPrice tokenType="juno" />
+        <TokenPrice tokenType="punk" />
+      </TokenPricesContainer>
     </Wrapper>
   );
 };

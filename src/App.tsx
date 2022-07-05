@@ -1,6 +1,6 @@
 import React from "react";
 
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path";
 import { ToastContainer } from "react-toastify";
@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import junoPresets from "./constant/junoPresets";
 import Main from "./pages/Main";
 
-const history = createBrowserHistory();
+// const history = createBrowserHistory();
 
 setBasePath(
   "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.64/dist/"
