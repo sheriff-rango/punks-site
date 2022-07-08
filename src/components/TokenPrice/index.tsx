@@ -37,18 +37,10 @@ const Arrow = ({ fill, transform }: { fill: string; transform: any }) => (
 
 const TokenPrice: React.FC<TokenPriceProps> = ({ tokenType }) => {
   const price = useAppSelector((state) => state.tokenPrices.price[tokenType]);
-  const tokenImage = price?.image.thumb || "";
+  const tokenImage = price?.image.large || "";
   const marketData = price?.market_data;
   const tokenPrice = marketData?.current_price.usd || 0;
   const priceChange = marketData?.price_change_percentage_24h || 0;
-  console.log(
-    "price",
-    tokenPrice,
-    "percentage",
-    priceChange,
-    "image",
-    tokenImage
-  );
 
   const colorLabel =
     priceChange < 0 ? "negative" : priceChange > 0 ? "positive" : "zero";
@@ -74,7 +66,7 @@ const TokenPrice: React.FC<TokenPriceProps> = ({ tokenType }) => {
               transform={priceChange < 0 ? "rotate(180deg)" : ""}
             />
           )}
-          {Math.abs(priceChange).toFixed(2)}
+          {`(${Math.abs(priceChange).toFixed(2)}%)`}
         </Text>
       </TokenPriceContainer>
     </Wrapper>

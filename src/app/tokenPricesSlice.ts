@@ -34,6 +34,13 @@ export type TokenPricesType = {
   };
 };
 
+const TimeFormats = {
+  [TokenHistoryPeriod.DAILY]: "hh:mm",
+  [TokenHistoryPeriod.WEEKLY]: "MM-DD",
+  [TokenHistoryPeriod.MONTHLY]: "MM-DD",
+  [TokenHistoryPeriod.YEARLY]: "YYYY-MM",
+};
+
 const getFromFunctions: { [key: number]: () => number } = {
   [TokenHistoryPeriod.DAILY]: () =>
     new Date().setDate(new Date().getDate() - 1),
@@ -89,7 +96,7 @@ export const fetchTokenPriceHistory = createAsyncThunk(
     const historyResult = await getQuery(getLink);
     const priceHistory = historyResult.prices;
     return priceHistory.map((historyItem: any) => ({
-      label: moment(new Date(historyItem[0])).format("YYYY-MM-DD hh:mm"),
+      label: moment(new Date(historyItem[0])).format(TimeFormats[period]),
       value: historyItem[1],
     }));
   }
@@ -124,6 +131,6 @@ export const tokenPricesSlice = createSlice({
   },
 });
 
-export const { clearTokenPrice } = tokenPricesSlice.actions;
+export const { clearTokenPrice, setHistoryOption } = tokenPricesSlice.actions;
 
 export default tokenPricesSlice.reducer;

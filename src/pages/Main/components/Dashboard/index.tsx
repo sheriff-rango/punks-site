@@ -1,4 +1,5 @@
 import React from "react";
+import Chart from "../../../../components/Chart";
 import TokenPrice from "../../../../components/TokenPrice";
 import {
   Wrapper,
@@ -29,6 +30,7 @@ const Dashboard: React.FC = () => {
         <TokenPrice tokenType="juno" />
         <TokenPrice tokenType="punk" />
       </TokenPricesContainer>
+      <Chart />
     </Wrapper>
   );
 };
