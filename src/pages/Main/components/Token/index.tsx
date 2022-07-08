@@ -56,7 +56,7 @@ const Token: React.FC = () => {
         ))}
       </InfoContainer>
       <FooterBar>
-        <FooterContent>TOtalTokenStaked on JunoPunk.io</FooterContent>
+        <FooterContent>TotalTokenStaked on JunoPunk.io</FooterContent>
         <FooterBalance>145.745 $PUNK</FooterBalance>
       </FooterBar>
     </Wrapper>

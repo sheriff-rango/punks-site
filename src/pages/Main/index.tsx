@@ -1,5 +1,6 @@
 import React from "react";
 import Dashboard from "./components/Dashboard";
+import NFTs from "./components/NFTs";
 import Sidebar from "./components/Sidebar";
 import Token from "./components/Token";
 
@@ -12,6 +13,7 @@ const Main: React.FC = () => {
       <MainContent>
         <Dashboard />
         <Token />
+        <NFTs />
       </MainContent>
     </Wrapper>
   );
