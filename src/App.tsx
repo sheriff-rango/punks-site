@@ -23,6 +23,7 @@ function App() {
     <WalletManagerProvider
       defaultChainId={config.chainId}
       enabledWalletTypes={[WalletType.Keplr, WalletType.WalletConnectKeplr]}
+      localStorageKey="keplr-wallet"
       walletConnectClientMeta={{
         name: "Bridge Keplr Metamask",
         description: "Bridge Keplr Metamask",

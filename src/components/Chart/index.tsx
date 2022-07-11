@@ -72,14 +72,15 @@ const SelectOptions: PeriodOptionType[] = [
 
 const Chart: React.FC = () => {
   const [period, setPeriod] = useState<PeriodOptionType>(SelectOptions[1]);
-  const [tokenType, setTokenType] = useState<TokenTypeOptionType>(
-    TokenOptions.punk
-  );
+  const [
+    tokenType,
+    //  setTokenType
+  ] = useState<TokenTypeOptionType>(TokenOptions.juno);
 
   const dispatch = useDispatch();
   const tokenPrices = useAppSelector((state) => state.tokenPrices);
   const priceHistory = tokenPrices.priceHistory;
-  const historyOption = tokenPrices.historyOption;
+  // const historyOption = tokenPrices.historyOption;
 
   useEffect(() => {
     dispatch(
@@ -95,9 +96,9 @@ const Chart: React.FC = () => {
   };
 
   const handleChangeTokenType = () => {
-    setTokenType((prev) =>
-      prev.id === "juno" ? TokenOptions.punk : TokenOptions.juno
-    );
+    // setTokenType((prev) =>
+    //   prev.id === "juno" ? TokenOptions.punk : TokenOptions.juno
+    // );
   };
 
   return (

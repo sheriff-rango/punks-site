@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "react-toastify";
 import { useAppSelector } from "../../../../app/hooks";
 import Chart from "../../../../components/Chart";
 import TokenPrice from "../../../../components/TokenPrice";
@@ -15,32 +16,31 @@ import {
   TokenPricesContainer,
 } from "./styled";
 
-const Dashboard: React.FC = () => {
-  const [tokens, setTokens] = useState<any>();
+const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
   const [rewardsAirdrop, setRewardsAirdrop] = useState();
   const account = useAppSelector((state) => state.accounts.keplr);
   const { runQuery, runExecute } = useContract();
 
-  useEffect(() => {
-    (async () => {
-      if (account) {
-        const tokens = await runQuery(Contracts.nftContract, {
-          tokens: {
-            owner: account.address,
-            limit: 30,
-          },
-        });
-        setTokens(tokens);
+  const getClaimAmount = useCallback(
+    async (tokens: any, address: string) => {
+      if (address && tokens) {
         const rewards = await runQuery(Contracts.stakingContract, {
           get_claim_amount: {
-            id: tokens.tokens,
-            address: account.address,
+            id: tokens,
+            address: address,
           },
         });
         setRewardsAirdrop(rewards);
       }
-    })();
-  }, [runQuery, account]);
+    },
+    [runQuery]
+  );
+
+  useEffect(() => {
+    if (account && tokens) {
+      getClaimAmount(tokens.tokens, account.address);
+    }
+  }, [runQuery, account, tokens, getClaimAmount]);
 
   const handleClaimAirdrop = async () => {
     if (!account || !tokens) return;
@@ -50,6 +50,8 @@ const Dashboard: React.FC = () => {
         token_id: tokens.tokens,
       },
     });
+    getClaimAmount(tokens.tokens, account.address);
+    toast.success("Successfully claimed!");
   };
 
   return (
@@ -62,7 +64,7 @@ const Dashboard: React.FC = () => {
             airdrop
           </AirDropSubTitle>
           <ClaimButton
-            disabled={!account}
+            disabled={!account || !Number(rewardsAirdrop)}
             onClick={handleClaimAirdrop}
           >{`Claim ${
             rewardsAirdrop ? Number(rewardsAirdrop) / 1e6 : ""
@@ -72,7 +74,8 @@ const Dashboard: React.FC = () => {
       </AirDropContainer>
       <TokenPricesContainer>
         <TokenPrice tokenType="juno" />
-        <TokenPrice tokenType="punk" />
+        <div />
+        {/* <TokenPrice tokenType="punk" /> */}
       </TokenPricesContainer>
       <Chart />
     </Wrapper>
