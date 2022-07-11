@@ -41,7 +41,7 @@ export const AirDropSubTitle = styled.div`
 export const ClaimButton = styled.button`
   color: white;
   background-color: #40baff;
-  width: 95px;
+  width: max-content;
   height: 53px;
   border-radius: 16px;
   border: none;

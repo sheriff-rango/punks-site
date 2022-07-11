@@ -45,21 +45,23 @@ const Token: React.FC = () => {
   ];
 
   return (
-    <Wrapper>
-      <TitleBar>
-        <MainTitle>$PUNK Token</MainTitle>
-        <SubTitle>Unstaking Period 27 Days | Daily Payout 08:00 UTC</SubTitle>
-      </TitleBar>
-      <InfoContainer>
-        {infos.map((info: InfoCardProps, index: number) => (
-          <InfoCard {...info} />
-        ))}
-      </InfoContainer>
-      <FooterBar>
-        <FooterContent>TotalTokenStaked on JunoPunk.io</FooterContent>
-        <FooterBalance>145.745 $PUNK</FooterBalance>
-      </FooterBar>
-    </Wrapper>
+    <div id="punkToken">
+      <Wrapper>
+        <TitleBar>
+          <MainTitle>$PUNK Token</MainTitle>
+          <SubTitle>Unstaking Period 27 Days | Daily Payout 08:00 UTC</SubTitle>
+        </TitleBar>
+        <InfoContainer>
+          {infos.map((info: InfoCardProps, index: number) => (
+            <InfoCard key={index} {...info} />
+          ))}
+        </InfoContainer>
+        <FooterBar>
+          <FooterContent>TotalTokenStaked on JunoPunk.io</FooterContent>
+          <FooterBalance>145.745 $PUNK</FooterBalance>
+        </FooterBar>
+      </Wrapper>
+    </div>
   );
 };
 

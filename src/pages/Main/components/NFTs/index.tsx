@@ -37,23 +37,25 @@ const NFTs: React.FC = () => {
   ];
 
   return (
-    <Wrapper>
-      <TitleBar>
-        <MainTitle>$PUNK NFTs</MainTitle>
-        <SubTitle>Unstaking Period 27 Days | Daily Payout 08:00 UTC</SubTitle>
-      </TitleBar>
-      <SubWrapper>
-        <InfoContainer>
-          {infos.map((info: InfoCardProps, index: number) => (
-            <InfoCard {...info} />
-          ))}
-        </InfoContainer>
-        <FooterBar>
-          <FooterContent>Total Punks Genesis NFT</FooterContent>
-          <FooterBalance>145/500</FooterBalance>
-        </FooterBar>
-      </SubWrapper>
-    </Wrapper>
+    <div id="punkNft">
+      <Wrapper>
+        <TitleBar>
+          <MainTitle>$PUNK NFTs</MainTitle>
+          <SubTitle>Unstaking Period 27 Days | Daily Payout 08:00 UTC</SubTitle>
+        </TitleBar>
+        <SubWrapper>
+          <InfoContainer>
+            {infos.map((info: InfoCardProps, index: number) => (
+              <InfoCard {...info} />
+            ))}
+          </InfoContainer>
+          <FooterBar>
+            <FooterContent>Total Punks Genesis NFT</FooterContent>
+            <FooterBalance>145/500</FooterBalance>
+          </FooterBar>
+        </SubWrapper>
+      </Wrapper>
+    </div>
   );
 };
 

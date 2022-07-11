@@ -80,8 +80,6 @@ const Chart: React.FC = () => {
   const tokenPrices = useAppSelector((state) => state.tokenPrices);
   const priceHistory = tokenPrices.priceHistory;
   const historyOption = tokenPrices.historyOption;
-  console.log("tokenPrices", tokenPrices);
-  console.log("historyOption", historyOption);
 
   useEffect(() => {
     dispatch(
