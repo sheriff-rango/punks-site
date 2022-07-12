@@ -1,11 +1,69 @@
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
+import { BarIcon } from "../../../../components/SvgIcons";
 
-export const Wrapper = styled.div`
+const expandAnimation = keyframes`
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+`;
+
+const collapseAnimation = keyframes`
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+`;
+
+export const Wrapper = styled.div<{ isMobile?: boolean; expanded?: boolean }>`
   width: 315px;
-  padding-top: 47px;
+  max-width: 315px;
+  height: 100vh;
+  background-color: #f2f8ff;
+  overflow-y: auto;
+  ${({ isMobile }) =>
+    isMobile &&
+    css`
+      position: fixed;
+      z-index: 1;
+      width: 100%;
+    `}
+  animation: ${({ expanded }) =>
+    expanded
+      ? css`
+          ${expandAnimation} 500ms linear forwards
+        `
+      : css`
+          ${collapseAnimation} 500ms linear forwards
+        `};
+`;
+
+export const MenuContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+export const WrapperBackground = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+`;
+
+export const StyledBarIcon = styled(BarIcon)`
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 2;
 `;
 
 export const Logo = styled.div`
@@ -15,6 +73,8 @@ export const Logo = styled.div`
   background-position: center;
   width: 100%;
   height: 51px;
+  margin-top: 47px;
+  margin-bottom: 36px;
 `;
 
 export const StyledSvg = styled.svg`
@@ -38,18 +98,32 @@ export const SidebarItem = styled.div`
   align-items: center;
 `;
 
-export const Title = styled(SidebarItem)`
-  background-color: #4062ff;
-  border-radius: 16px;
-  color: white;
-  margin-top: 52px;
-  cursor: default;
-`;
-
-export const MenuItem = styled(SidebarItem)`
-  color: #b8bed9;
-  cursor: pointer;
+export const MenuItem = styled(SidebarItem)<{ selected: boolean }>`
   margin-top: 17px;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: all 0.3s;
+
+  ${({ selected }) =>
+    selected
+      ? css`
+          background-color: #4062ff;
+          color: white;
+          ${StyledSvg} {
+            path {
+              fill: white;
+            }
+          }
+        `
+      : css`
+          background-color: transparent;
+          color: #b8bed9;
+          ${StyledSvg} {
+            path {
+              fill: #b8bed9;
+            }
+          }
+        `}
 `;
 
 export const ConnectWallet = styled(SidebarItem)<{ connected?: boolean }>`

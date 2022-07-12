@@ -7,6 +7,7 @@ import {
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import accountsSlice from "./accountsSlice";
+import tokenPricesSlice from "./tokenPricesSlice";
 
 const persistConfig = {
   key: "root",
@@ -17,6 +18,7 @@ const reducer = persistReducer(
   persistConfig,
   combineReducers({
     accounts: accountsSlice,
+    tokenPrices: tokenPricesSlice,
   })
 );
 
