@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
 
 export const MainContent = styled.div`
   /* width: calc(100% - 315px); */
-  width: 100%:
+  width: 100%;
   height: 100vh;
   overflow-y: auto;
 `;

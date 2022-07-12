@@ -14,8 +14,8 @@ import { MenuType } from "./types";
 
 const Sidebar: React.FC = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState<string>(Menus[0].id);
-  const { isXs, isSm, isMd } = useMatchBreakpoints();
-  const isMobile = isXs || isSm || isMd;
+  const { isXs, isSm, isMd, isLg } = useMatchBreakpoints();
+  const isMobile = isXs || isSm || isMd || isLg;
   const [expanded, setExpanded] = useState(isMobile);
 
   const handleClickMenuItem = (menuItem: MenuType) => {
