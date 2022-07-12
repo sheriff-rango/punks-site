@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import useMatchBreakpoints from "../../../../hooks/useMatchBreakpoints";
 import ConnectWalletButton from "./ConnectWalletButton";
 import { Wrapper, Logo, MenuItem } from "./styled";
 import Menus from "./menus";
@@ -7,6 +8,8 @@ import { MenuType } from "./types";
 
 const Sidebar: React.FC = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState<string>(Menus[0].id);
+  const { isXs, isSm, isMd } = useMatchBreakpoints();
+  const isMobile = isXs || isSm || isMd;
 
   const handleClickMenuItem = (menuItem: MenuType) => {
     if (menuItem.link) {
