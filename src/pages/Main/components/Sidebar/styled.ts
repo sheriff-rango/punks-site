@@ -144,6 +144,7 @@ export const Wrapper = styled.div<{ isMobile?: boolean; expanded?: boolean }>`
   height: 100vh;
   background-color: #f2f8ff;
   overflow-y: auto;
+  overflow-x: hidden;
   animation: ${({ expanded }) =>
     expanded
       ? css`

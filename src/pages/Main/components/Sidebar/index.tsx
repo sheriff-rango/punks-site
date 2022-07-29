@@ -62,6 +62,10 @@ const Sidebar: React.FC = () => {
     (state) => state.elementViewState.target
   );
 
+  useEffect(() => {
+    setExpanded(isMobile);
+  }, [isMobile]);
+
   const handleClickMenuItem = (menuItem: MenuType) => {
     if (menuItem.link) {
       window.open(menuItem.link);
@@ -70,12 +74,10 @@ const Sidebar: React.FC = () => {
       targetElement?.scrollIntoView({
         behavior: "smooth",
       });
+      setExpanded(false);
       // setSelectedMenuItem(menuItem.id);
     }
   };
-  useEffect(() => {
-    setExpanded(isMobile);
-  }, [isMobile]);
 
   return (
     <>

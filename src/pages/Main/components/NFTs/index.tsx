@@ -38,6 +38,7 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
   const [stakingPeriod, setStakingPeriod] = useState(0);
   const [totalStaked, setTotalStaked] = useState(0);
   const [sendingTx, setSendingTx] = useState(false);
+  const [rarityRanks, setRarityRanks] = useState<any>({});
   const { currentTime } = useContext(CurrentTimeContext);
   const { runQuery, runExecute } = useContract();
   const { isXs, isSm, isMd } = useMatchBreakpoints();
@@ -73,6 +74,24 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
       setSendingTx(false);
     }
   }, [runExecute, sendingTx]);
+
+  useEffect(() => {
+    (async () => {
+      const rarityData =
+        await require("../../../../rank_reduce/junopunks.json");
+      const weights = rarityData.weights || [];
+      let rarities: any = {};
+      if (weights.length) {
+        weights.forEach((item: any) => {
+          rarities[item.token_id + 1] = {
+            weight: item.weight,
+            rank: item.rank,
+          };
+        });
+      }
+      setRarityRanks(rarities);
+    })();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -156,7 +175,9 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
     <Wrapper id={PAGES.PUNKNFT}>
       <TitleBar>
         <MainTitle>$PUNK NFTs</MainTitle>
-        <SubTitle>Unstaking Period 27 Days | Weekly Payout 08:00 UTC</SubTitle>
+        <SubTitle>
+          Unstaking Period 27 Days | Weekly Payout All Monday 08:00 UTC
+        </SubTitle>
       </TitleBar>
       <SubWrapper>
         <InfoContainer isMobile={isMobile}>
@@ -176,6 +197,7 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
             key={`staked-${index}`}
             id={item.token_id}
             item={item}
+            rarityRanks={rarityRanks}
             unStakingPeriod={stakingPeriod}
             currentTime={currentTime}
             fetchNFT={fetchAllNfts}
@@ -186,11 +208,20 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
             key={`normal-${index}`}
             id={item}
             item={{ token_id: item }}
+            rarityRanks={rarityRanks}
             unStakingPeriod={stakingPeriod}
             currentTime={currentTime}
             fetchNFT={fetchAllNfts}
           />
         ))}
+        <NFTItem
+          id={"JunoPunks.36"}
+          item={{ token_id: "JunoPunks.36" }}
+          rarityRanks={rarityRanks}
+          unStakingPeriod={stakingPeriod}
+          currentTime={currentTime}
+          fetchNFT={fetchAllNfts}
+        />
       </NftContainer>
       {/* <Button onClick={distributeRewards}>Distribute Rewards</Button> */}
     </Wrapper>
