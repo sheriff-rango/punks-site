@@ -1,51 +1,12 @@
 import styled, { css, keyframes } from "styled-components";
 import { BarIcon } from "../../../../components/SvgIcons";
 
-const expandAnimation = keyframes`
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-`;
-
-const collapseAnimation = keyframes`
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0;
-  }
-`;
-
-export const Wrapper = styled.div<{ isMobile?: boolean; expanded?: boolean }>`
-  width: 315px;
-  max-width: 315px;
-  height: 100vh;
-  background-color: #f2f8ff;
-  overflow-y: auto;
-  ${({ isMobile }) =>
-    isMobile &&
-    css`
-      position: fixed;
-      z-index: 1;
-      width: 100%;
-    `}
-  animation: ${({ expanded }) =>
-    expanded
-      ? css`
-          ${expandAnimation} 500ms linear forwards
-        `
-      : css`
-          ${collapseAnimation} 500ms linear forwards
-        `};
-`;
-
 export const MenuContainer = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
 `;
 
 export const WrapperBackground = styled.div`
@@ -73,8 +34,8 @@ export const Logo = styled.div`
   background-position: center;
   width: 100%;
   height: 51px;
-  margin-top: 47px;
-  margin-bottom: 36px;
+  margin-top: 40px;
+  margin-bottom: 30;
 `;
 
 export const StyledSvg = styled.svg`
@@ -85,7 +46,7 @@ export const StyledSvg = styled.svg`
 
 export const SidebarItem = styled.div`
   width: 207px;
-  height: 64px;
+  height: 50px;
   position: relative;
   font-weight: 700;
   font-size: 16px;
@@ -99,7 +60,7 @@ export const SidebarItem = styled.div`
 `;
 
 export const MenuItem = styled(SidebarItem)<{ selected: boolean }>`
-  margin-top: 17px;
+  margin-top: 10px;
   cursor: pointer;
   border-radius: 16px;
   transition: all 0.3s;
@@ -126,8 +87,87 @@ export const MenuItem = styled(SidebarItem)<{ selected: boolean }>`
         `}
 `;
 
+export const SocialIcons = styled.div`
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
+
+export const StyledSocialIconSvg = styled.svg`
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin: 0 15px;
+`;
+
 export const ConnectWallet = styled(SidebarItem)<{ connected?: boolean }>`
-  margin-top: 117px;
+  margin-top: 10px;
+  margin-bottom: 50px;
   color: ${({ connected }) => (connected ? "#FF4842" : "#002dff")};
   cursor: pointer;
+`;
+
+export const SidebarFooter = styled.div`
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 13px;
+  display: flex;
+  align-items: center;
+  color: #000000;
+  position: absolute;
+  bottom: 10px;
+`;
+
+const expandAnimation = keyframes`
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+`;
+
+const collapseAnimation = keyframes`
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+`;
+
+export const Wrapper = styled.div<{ isMobile?: boolean; expanded?: boolean }>`
+  width: 315px;
+  max-width: 315px;
+  height: 100vh;
+  background-color: #f2f8ff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  animation: ${({ expanded }) =>
+    expanded
+      ? css`
+          ${expandAnimation} 500ms linear forwards
+        `
+      : css`
+          ${collapseAnimation} 500ms linear forwards
+        `};
+  ${({ isMobile }) =>
+    isMobile &&
+    css`
+      position: fixed;
+      z-index: 1;
+      width: 100%;
+      ${Logo} {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      ${MenuItem} {
+        margin-top: 10px;
+      }
+      ${SocialIcons} {
+        margin-top: 20px;
+      }
+    `}
 `;
