@@ -4,6 +4,7 @@ import { useAppSelector } from "../../../../app/hooks";
 import Chart from "../../../../components/Chart";
 import TokenPrice from "../../../../components/TokenPrice";
 import { Contracts } from "../../../../constant/config";
+import { PAGES } from "../../../../constant/pages";
 import useContract from "../../../../hooks/useContract";
 import useMatchBreakpoints from "../../../../hooks/useMatchBreakpoints";
 import {
@@ -127,7 +128,7 @@ const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper id={PAGES.DASHBOARD}>
       <AirDropContainer isMobile={isMobile}>
         {isMobile && <AirDropImage />}
         <AirDropContent>

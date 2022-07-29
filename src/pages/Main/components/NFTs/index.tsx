@@ -10,6 +10,7 @@ import { useAppSelector } from "../../../../app/hooks";
 import InfoCard, { InfoCardProps } from "../../../../components/InfoCard";
 import NFTItem from "../../../../components/NFTItem";
 import { Contracts } from "../../../../constant/config";
+import { PAGES } from "../../../../constant/pages";
 import useContract from "../../../../hooks/useContract";
 import useMatchBreakpoints from "../../../../hooks/useMatchBreakpoints";
 import { CurrentTimeContext } from "../../index";
@@ -152,51 +153,47 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
   }, [stakedNfts, tokens]);
 
   return (
-    <div id="punkNft">
-      <Wrapper>
-        <TitleBar>
-          <MainTitle>$PUNK NFTs</MainTitle>
-          <SubTitle>
-            Unstaking Period 27 Days | Weekly Payout 08:00 UTC
-          </SubTitle>
-        </TitleBar>
-        <SubWrapper>
-          <InfoContainer isMobile={isMobile}>
-            {infos.map((info: InfoCardProps, index: number) => (
-              <InfoCard key={index} {...info} />
-            ))}
-          </InfoContainer>
-          <FooterBar isMobile={isMobile}>
-            <FooterContent>Total Punks Staked NFT</FooterContent>
-            <FooterBalance>{`${totalStaked}/500`}</FooterBalance>
-          </FooterBar>
-        </SubWrapper>
-        <NftContainerTitle>My NFTs</NftContainerTitle>
-        <NftContainer>
-          {stakedNfts.map((item: any, index: number) => (
-            <NFTItem
-              key={`staked-${index}`}
-              id={item.token_id}
-              item={item}
-              unStakingPeriod={stakingPeriod}
-              currentTime={currentTime}
-              fetchNFT={fetchAllNfts}
-            />
+    <Wrapper id={PAGES.PUNKNFT}>
+      <TitleBar>
+        <MainTitle>$PUNK NFTs</MainTitle>
+        <SubTitle>Unstaking Period 27 Days | Weekly Payout 08:00 UTC</SubTitle>
+      </TitleBar>
+      <SubWrapper>
+        <InfoContainer isMobile={isMobile}>
+          {infos.map((info: InfoCardProps, index: number) => (
+            <InfoCard key={index} {...info} />
           ))}
-          {tokens?.tokens?.map((item: any, index: number) => (
-            <NFTItem
-              key={`normal-${index}`}
-              id={item}
-              item={{ token_id: item }}
-              unStakingPeriod={stakingPeriod}
-              currentTime={currentTime}
-              fetchNFT={fetchAllNfts}
-            />
-          ))}
-        </NftContainer>
-        {/* <Button onClick={distributeRewards}>Distribute Rewards</Button> */}
-      </Wrapper>
-    </div>
+        </InfoContainer>
+        <FooterBar isMobile={isMobile}>
+          <FooterContent>Total Punks Staked NFT</FooterContent>
+          <FooterBalance>{`${totalStaked}/500`}</FooterBalance>
+        </FooterBar>
+      </SubWrapper>
+      <NftContainerTitle>My NFTs</NftContainerTitle>
+      <NftContainer>
+        {stakedNfts.map((item: any, index: number) => (
+          <NFTItem
+            key={`staked-${index}`}
+            id={item.token_id}
+            item={item}
+            unStakingPeriod={stakingPeriod}
+            currentTime={currentTime}
+            fetchNFT={fetchAllNfts}
+          />
+        ))}
+        {tokens?.tokens?.map((item: any, index: number) => (
+          <NFTItem
+            key={`normal-${index}`}
+            id={item}
+            item={{ token_id: item }}
+            unStakingPeriod={stakingPeriod}
+            currentTime={currentTime}
+            fetchNFT={fetchAllNfts}
+          />
+        ))}
+      </NftContainer>
+      {/* <Button onClick={distributeRewards}>Distribute Rewards</Button> */}
+    </Wrapper>
   );
 };
 
