@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 
 import { formatDurationTime } from "../../utils/formatTime";
 import useContract from "../../hooks/useContract";
-import { Contracts } from "../../constant/config";
 
 import {
   NFTItemWrapper,

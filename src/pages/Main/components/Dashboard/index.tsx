@@ -43,17 +43,20 @@ const SearchIcon = ({ ...props }) => (
   </StyledSvg>
 );
 
-const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
+const Dashboard: React.FC = () => {
   const [tokenIdNumber, setTokenIdNumber] = useState<string>("");
   const [claimCheckResult, setClaimCheckResult] = useState<{
     id: string;
     claimStatus: boolean;
   }>();
   const [rewardsAirdrop, setRewardsAirdrop] = useState();
+  const { runQuery, runExecute } = useContract();
   const { isXs, isSm, isMd } = useMatchBreakpoints();
   const isMobile = isXs || isSm || isMd;
   const account = useAppSelector((state) => state.accounts.keplr);
-  const { runQuery, runExecute } = useContract();
+  const tokens = useAppSelector(
+    (state) => state.nfts[Contracts.nftContracts.genisis]
+  );
 
   const url = `https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb/${claimCheckResult?.id}.png`;
 

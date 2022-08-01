@@ -44,7 +44,7 @@ export const Contracts: {
 } = {
   nftContracts: {
     genisis: "juno1e229el8t4lu4rx7xeekc77zspxa2gz732ld0e6a5q0sr0l3gm78stuvc5g",
-    martians: "",
+    martians: "juno10u3st6w8tx95ejtq6drffk6zy68z76m32lapq9m5shj7gu0y5mxswj6we0",
   },
   stakingContracts: {
     genisis: "juno1m7uwvetjxr2efmlenvk2pzgsyzpnetlta95lx4rmmest6y0x8nvqh5he5k",

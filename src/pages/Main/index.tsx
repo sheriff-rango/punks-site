@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import { Contracts } from "../../constant/config";
 import useContract from "../../hooks/useContract";
@@ -19,7 +19,6 @@ export const CurrentTimeContext = createContext({
 
 const Main: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(Number(new Date()));
-  const [tokens, setTokens] = useState<any>({});
   // const account = useAppSelector((state) => state.accounts.keplr);
   const dispatch = useAppDispatch();
   const { runQuery } = useContract();
@@ -47,24 +46,6 @@ const Main: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchNfts = useCallback(
-    async (address: string, nftAddress) => {
-      if (address) {
-        const tokens = await runQuery(nftAddress, {
-          tokens: {
-            owner: address,
-            limit: 30,
-          },
-        });
-        setTokens((prev: any) => ({
-          ...prev,
-          [nftAddress]: tokens,
-        }));
-      }
-    },
-    [runQuery]
-  );
-
   // useEffect(() => {
   //   if (account) {
   //     fetchNfts(account.address);
@@ -76,11 +57,9 @@ const Main: React.FC = () => {
       <Wrapper>
         <Sidebar />
         <MainContent id={PAGES.MAINCONTENT}>
-          <Dashboard tokens={tokens} />
+          <Dashboard />
           {/* <Token /> */}
           <NFTs
-            tokens={tokens[Contracts.nftContracts.genisis]}
-            fetchNfts={fetchNfts}
             options={{
               nftAddress: Contracts.nftContracts.genisis,
               stakingAddress: Contracts.stakingContracts.genisis,

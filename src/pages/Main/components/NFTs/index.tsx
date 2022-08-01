@@ -6,7 +6,8 @@ import React, {
   useMemo,
 } from "react";
 import { toast } from "react-toastify";
-import { useAppSelector } from "../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
+import { setNfts } from "../../../../app/nftsSlice";
 import InfoCard, { InfoCardProps } from "../../../../components/InfoCard";
 import NFTItem from "../../../../components/NFTItem";
 import { PAGES } from "../../../../constant/pages";
@@ -30,8 +31,6 @@ import {
 } from "./styled";
 
 interface NFTsProps {
-  tokens: any;
-  fetchNfts: any;
   options: {
     nftAddress: string;
     stakingAddress: string;
@@ -39,7 +38,10 @@ interface NFTsProps {
   };
 }
 
-const NFTs: React.FC<NFTsProps> = ({ tokens, fetchNfts, options }) => {
+const NFTs: React.FC<NFTsProps> = ({
+  // tokens, fetchNfts,
+  options,
+}) => {
   const [stakedNfts, setStakedNfts] = useState([]);
   const [stakingPeriod, setStakingPeriod] = useState(0);
   const [totalStaked, setTotalStaked] = useState(0);
@@ -50,11 +52,20 @@ const NFTs: React.FC<NFTsProps> = ({ tokens, fetchNfts, options }) => {
   const { isXs, isSm, isMd } = useMatchBreakpoints();
   const isMobile = isXs || isSm || isMd;
   const account = useAppSelector((state: any) => state.accounts.keplr);
+  const tokens = useAppSelector((state) => state.nfts[options.nftAddress]);
+  const dispatch = useAppDispatch();
 
   const fetchAllNfts = useCallback(
     async (address: string) => {
       if (address) {
-        fetchNfts(address, options.nftAddress);
+        // fetchNfts(address, options.nftAddress);
+        const tokens = await runQuery(options.nftAddress, {
+          tokens: {
+            owner: address,
+            limit: 30,
+          },
+        });
+        dispatch(setNfts([options.nftAddress, tokens]));
         const stakedNft = await runQuery(options.stakingAddress, {
           get_my_info: {
             address: address,
@@ -64,7 +75,7 @@ const NFTs: React.FC<NFTsProps> = ({ tokens, fetchNfts, options }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fetchNfts, options]
+    [options]
   );
 
   const distributeRewards = useCallback(async () => {
