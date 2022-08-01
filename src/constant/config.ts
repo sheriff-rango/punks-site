@@ -48,6 +48,6 @@ export const Contracts: {
   },
   stakingContracts: {
     genisis: "juno1m7uwvetjxr2efmlenvk2pzgsyzpnetlta95lx4rmmest6y0x8nvqh5he5k",
-    martians: "",
+    martians: "juno1s0tewcu485syneth968n7hz3vx23t24k904j26ae3lw75vzv7d3qtg8sp3",
   },
 };
