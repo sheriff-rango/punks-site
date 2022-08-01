@@ -30,8 +30,26 @@ import {
   NftItemContent,
 } from "./styled";
 
-const TOKEN_ID = "JunoPunks";
 const MAX_COUNT = 500;
+
+const ClaimCheckOption = [
+  {
+    title: "Find your Genesis Punks",
+    tokenId: "JunoPunks",
+    nftAddress: Contracts.nftContracts.genisis,
+    stakingAddress: Contracts.stakingContracts.genisis,
+    imageBaseUrl:
+      "https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb",
+  },
+  {
+    title: "Find your Martians Punks",
+    tokenId: "JunoPunks2",
+    nftAddress: Contracts.nftContracts.martians,
+    stakingAddress: Contracts.stakingContracts.martians,
+    imageBaseUrl:
+      "https://hopegalaxy.mypinata.cloud/ipfs/QmWFWZh2cqGPrCpsMeqvsxrjZjKz8WckbuRmmq9hRAXfFe",
+  },
+];
 
 const SearchIcon = ({ ...props }) => (
   <StyledSvg
@@ -44,11 +62,12 @@ const SearchIcon = ({ ...props }) => (
 );
 
 const Dashboard: React.FC = () => {
-  const [tokenIdNumber, setTokenIdNumber] = useState<string>("");
+  const [tokenIdNumber, setTokenIdNumber] = useState<{ [key: string]: string }>(
+    {}
+  );
   const [claimCheckResult, setClaimCheckResult] = useState<{
-    id: string;
-    claimStatus: boolean;
-  }>();
+    [key: string]: { id: string; claimStatus: boolean };
+  }>({});
   const [rewardsAirdrop, setRewardsAirdrop] = useState();
   const { runQuery, runExecute } = useContract();
   const { isXs, isSm, isMd } = useMatchBreakpoints();
@@ -58,9 +77,14 @@ const Dashboard: React.FC = () => {
     (state) => state.nfts[Contracts.nftContracts.genisis]
   );
 
-  const url = `https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb/${claimCheckResult?.id}.png`;
-
-  const claimChecker = async (tokenId: string): Promise<boolean> => {
+  const claimChecker = async (
+    tokenId: string,
+    {
+      nftAddress,
+      stakingAddress,
+    }: { nftAddress: string; stakingAddress: string }
+  ): Promise<boolean> => {
+    if (!nftAddress || !stakingAddress) return false;
     const tokens: any = await runQuery(Contracts.nftContracts.genisis, {
       all_nft_info: {
         token_id: tokenId,
@@ -109,26 +133,42 @@ const Dashboard: React.FC = () => {
     toast.success("Successfully claimed!");
   };
 
-  const handleChangeSearchTokenId = (e: any) => {
+  const handleChangeSearchTokenId = (e: any, nftAddress: string) => {
     const { value } = e.target;
     const number = Number(value.split(".").pop());
     if (isNaN(number)) return;
-    setTokenIdNumber(number ? "" + Math.min(number, MAX_COUNT) : "");
+    setTokenIdNumber((prev) => ({
+      ...prev,
+      [nftAddress]: number ? "" + Math.min(number, MAX_COUNT) : "",
+    }));
   };
 
-  const handleCheckClaim = async () => {
+  const handleCheckClaim = async (
+    nftAddress: string,
+    stakingAddress: string
+  ) => {
     try {
-      const claimResult = await claimChecker(`JunoPunks.${tokenIdNumber}`);
-      setClaimCheckResult({
-        id: tokenIdNumber,
-        claimStatus: claimResult,
+      const tokenId =
+        nftAddress === Contracts.nftContracts.genisis
+          ? `JunoPunks.${tokenIdNumber[nftAddress]}`
+          : `JunoPunks2${tokenIdNumber[nftAddress]}`;
+      const claimResult = await claimChecker(tokenId, {
+        nftAddress,
+        stakingAddress,
       });
+      setClaimCheckResult((prev) => ({
+        ...prev,
+        [nftAddress]: {
+          id: tokenIdNumber[nftAddress],
+          claimStatus: claimResult,
+        },
+      }));
     } catch (err) {}
   };
 
-  const handleKeyUp = (e: any) => {
+  const handleKeyUp = (e: any, nftAddress: string, stakingAddress: string) => {
     if (e.key === "Enter" && tokenIdNumber) {
-      handleCheckClaim();
+      handleCheckClaim(nftAddress, stakingAddress);
     }
   };
 
@@ -158,64 +198,58 @@ const Dashboard: React.FC = () => {
         {!isMobile && <AirDropImage />}
       </AirDropContainer>
       <ClaimCheckerContainer id={PAGES.TOKENCHECKER}>
-        <ClaimCheckerItem>
-          <ClaimCheckerTitle>Find your Genesis Punks</ClaimCheckerTitle>
-          <ClaimCheckerContent>
-            <TokenIdInputerContainer>
-              <TokenIdInputer
-                value={`${TOKEN_ID}.${tokenIdNumber}`}
-                onChange={handleChangeSearchTokenId}
-                onKeyUp={handleKeyUp}
-                placeholder="Please input token id"
-              />
-              <SearchIcon onClick={handleCheckClaim} />
-            </TokenIdInputerContainer>
-            {claimCheckResult && (
-              <NftItem>
-                <NftItemImage src={url} alt="" />
-                <NftItemContents>
-                  <NftItemContent>{`JunoPunks.${claimCheckResult.id}`}</NftItemContent>
-                  <NftItemContent
-                    backgroundColor={
-                      claimCheckResult.claimStatus ? "#4062FF" : "#66C24F"
+        {ClaimCheckOption.map((item, index) => {
+          const url = `${item.imageBaseUrl}/${
+            claimCheckResult?.[item.nftAddress]?.id
+          }.png`;
+          return (
+            <ClaimCheckerItem key={index}>
+              <ClaimCheckerTitle>{item.title}</ClaimCheckerTitle>
+              <ClaimCheckerContent>
+                <TokenIdInputerContainer>
+                  <TokenIdInputer
+                    value={`${item.tokenId}.${
+                      tokenIdNumber[item.nftAddress] || ""
+                    }`}
+                    onChange={(e) =>
+                      handleChangeSearchTokenId(e, item.nftAddress)
                     }
-                  >
-                    {claimCheckResult.claimStatus ? "Claimed" : "Claimable"}
-                  </NftItemContent>
-                </NftItemContents>
-              </NftItem>
-            )}
-          </ClaimCheckerContent>
-        </ClaimCheckerItem>
-        <ClaimCheckerItem>
-          <ClaimCheckerTitle>Find your Martians Punks</ClaimCheckerTitle>
-          <ClaimCheckerContent>
-            <TokenIdInputerContainer>
-              <TokenIdInputer
-                // value={`${TOKEN_ID}.${tokenIdNumber}`}
-                // onChange={handleChangeSearchTokenId}
-                // onKeyUp={handleKeyUp}
-                placeholder="Please input token id"
-              />
-              <SearchIcon onClick={handleCheckClaim} />
-            </TokenIdInputerContainer>
-            {/* {claimCheckResult && (
-              <NftItem>
-                <NftItemImage src={url} alt="" />
-                <NftItemContents>
-                  <NftItemContent>{`JunoPunks.${claimCheckResult.id}`}</NftItemContent>
-                  <NftItemContent
-                    backgroundColor={
-                      claimCheckResult.claimStatus ? "#4062FF" : "#66C24F"
+                    onKeyUp={(e) =>
+                      handleKeyUp(e, item.nftAddress, item.stakingAddress)
                     }
-                  >
-                    {claimCheckResult.claimStatus ? "Claimed" : "Claimable"}
-                  </NftItemContent>
-                </NftItemContents>
-              </NftItem>
-            )} */}
-          </ClaimCheckerContent>
-        </ClaimCheckerItem>
+                    placeholder="Please input token id"
+                  />
+                  <SearchIcon
+                    onClick={() =>
+                      handleCheckClaim(item.nftAddress, item.stakingAddress)
+                    }
+                  />
+                </TokenIdInputerContainer>
+                {claimCheckResult[item.nftAddress] && (
+                  <NftItem>
+                    <NftItemImage src={url} alt="" />
+                    <NftItemContents>
+                      <NftItemContent>{`JunoPunks.${
+                        claimCheckResult?.[item.nftAddress]?.id
+                      }`}</NftItemContent>
+                      <NftItemContent
+                        backgroundColor={
+                          claimCheckResult[item.nftAddress].claimStatus
+                            ? "#4062FF"
+                            : "#66C24F"
+                        }
+                      >
+                        {claimCheckResult[item.nftAddress].claimStatus
+                          ? "Claimed"
+                          : "Claimable"}
+                      </NftItemContent>
+                    </NftItemContents>
+                  </NftItem>
+                )}
+              </ClaimCheckerContent>
+            </ClaimCheckerItem>
+          );
+        })}
       </ClaimCheckerContainer>
       <TokenPricesContainer>
         <TokenPrice tokenType="juno" />
