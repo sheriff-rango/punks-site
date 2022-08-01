@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import { useAppSelector } from "../../../../app/hooks";
 import InfoCard, { InfoCardProps } from "../../../../components/InfoCard";
 import NFTItem from "../../../../components/NFTItem";
-import { Contracts } from "../../../../constant/config";
 import { PAGES } from "../../../../constant/pages";
 import useContract from "../../../../hooks/useContract";
 import useMatchBreakpoints from "../../../../hooks/useMatchBreakpoints";
@@ -30,10 +29,17 @@ import {
   // StyledButton as Button,
 } from "./styled";
 
-const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
-  tokens,
-  fetchNfts,
-}) => {
+interface NFTsProps {
+  tokens: any;
+  fetchNfts: any;
+  options: {
+    nftAddress: string;
+    stakingAddress: string;
+    rarityData: any;
+  };
+}
+
+const NFTs: React.FC<NFTsProps> = ({ tokens, fetchNfts, options }) => {
   const [stakedNfts, setStakedNfts] = useState([]);
   const [stakingPeriod, setStakingPeriod] = useState(0);
   const [totalStaked, setTotalStaked] = useState(0);
@@ -48,8 +54,8 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
   const fetchAllNfts = useCallback(
     async (address: string) => {
       if (address) {
-        fetchNfts(address);
-        const stakedNft = await runQuery(Contracts.stakingContract, {
+        fetchNfts(address, options.nftAddress);
+        const stakedNft = await runQuery(options.stakingAddress, {
           get_my_info: {
             address: address,
           },
@@ -57,14 +63,15 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
         setStakedNfts(stakedNft || []);
       }
     },
-    [fetchNfts, runQuery]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fetchNfts, options]
   );
 
   const distributeRewards = useCallback(async () => {
     if (sendingTx) return;
     try {
       setSendingTx(true);
-      await runExecute(Contracts.stakingContract, {
+      await runExecute(options.stakingAddress, {
         distribute_reward: {},
       });
       toast.success("Successfully Distributed!");
@@ -73,12 +80,12 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
     } finally {
       setSendingTx(false);
     }
-  }, [runExecute, sendingTx]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.stakingAddress, sendingTx]);
 
   useEffect(() => {
     (async () => {
-      const rarityData =
-        await require("../../../../rank_reduce/junopunks.json");
+      const rarityData = options.rarityData;
       const weights = rarityData.weights || [];
       let rarities: any = {};
       if (weights.length) {
@@ -91,14 +98,14 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
       }
       setRarityRanks(rarities);
     })();
-  }, []);
+  }, [options.rarityData]);
 
   useEffect(() => {
     (async () => {
       if (account) {
         fetchAllNfts(account.address);
       }
-      const stakingStateInfo = await runQuery(Contracts.stakingContract, {
+      const stakingStateInfo = await runQuery(options.stakingAddress, {
         get_state_info: {},
       });
       setStakingPeriod(stakingStateInfo?.staking_period || 0);
@@ -112,7 +119,8 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
         distributeRewards();
       }
     })();
-  }, [runQuery, account, fetchAllNfts, distributeRewards]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, fetchAllNfts, distributeRewards, options.stakingAddress]);
 
   const handleClaim = async () => {
     if (sendingTx) return;
@@ -123,7 +131,7 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
     if (stakedIds.length) {
       setSendingTx(true);
       try {
-        await runExecute(Contracts.stakingContract, {
+        await runExecute(options.stakingAddress, {
           get_reward: { token_ids: stakedIds },
         });
         fetchAllNfts(account.address);
@@ -201,6 +209,10 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
             unStakingPeriod={stakingPeriod}
             currentTime={currentTime}
             fetchNFT={fetchAllNfts}
+            options={{
+              nftAddress: options.nftAddress,
+              stakingAddress: options.stakingAddress,
+            }}
           />
         ))}
         {tokens?.tokens?.map((item: any, index: number) => (
@@ -212,6 +224,10 @@ const NFTs: React.FC<{ tokens: any; fetchNfts: any }> = ({
             unStakingPeriod={stakingPeriod}
             currentTime={currentTime}
             fetchNFT={fetchAllNfts}
+            options={{
+              nftAddress: options.nftAddress,
+              stakingAddress: options.stakingAddress,
+            }}
           />
         ))}
       </NftContainer>

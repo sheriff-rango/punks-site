@@ -58,13 +58,13 @@ const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
   const url = `https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb/${claimCheckResult?.id}.png`;
 
   const claimChecker = async (tokenId: string): Promise<boolean> => {
-    const tokens: any = await runQuery(Contracts.nftContract, {
+    const tokens: any = await runQuery(Contracts.nftContracts.genisis, {
       all_nft_info: {
         token_id: tokenId,
       },
     });
     const address = tokens?.access?.owner;
-    const claimAmount = await runQuery(Contracts.stakingContract, {
+    const claimAmount = await runQuery(Contracts.stakingContracts.genisis, {
       get_claim_amount: {
         id: [tokenId],
         address,
@@ -76,7 +76,7 @@ const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
   const getClaimAmount = useCallback(
     async (tokens: any, address: string) => {
       if (address && tokens) {
-        const rewards = await runQuery(Contracts.stakingContract, {
+        const rewards = await runQuery(Contracts.stakingContracts.genisis, {
           get_claim_amount: {
             id: tokens,
             address: address,
@@ -97,7 +97,7 @@ const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
   const handleClaimAirdrop = async () => {
     if (!account || !tokens) return;
 
-    await runExecute(Contracts.stakingContract, {
+    await runExecute(Contracts.stakingContracts.genisis, {
       claim_reward: {
         token_id: tokens.tokens,
       },
@@ -154,7 +154,7 @@ const Dashboard: React.FC<{ tokens: any }> = ({ tokens }) => {
         </AirDropContent>
         {!isMobile && <AirDropImage />}
       </AirDropContainer>
-      <ClaimCheckerContainer>
+      <ClaimCheckerContainer id={PAGES.TOKENCHECKER}>
         <ClaimCheckerItem>
           <ClaimCheckerTitle>Find your Genesis Punks</ClaimCheckerTitle>
           <ClaimCheckerContent>
