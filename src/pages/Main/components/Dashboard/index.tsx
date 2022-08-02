@@ -119,14 +119,14 @@ const Dashboard: React.FC = () => {
   const [claimCheckResult, setClaimCheckResult] = useState<{
     [key: string]: { id: string; claimStatus: boolean };
   }>({});
-  const [rewardsAirdrop, setRewardsAirdrop] = useState();
+  const [rewardsAirdrop, setRewardsAirdrop] = useState<{
+    [key: string]: any;
+  }>({});
   const { runQuery, runExecute } = useContract();
   const { isXs, isSm, isMd } = useMatchBreakpoints();
   const isMobile = isXs || isSm || isMd;
   const account = useAppSelector((state) => state.accounts.keplr);
-  const tokens = useAppSelector(
-    (state) => state.nfts[Contracts.nftContracts.genisis]
-  );
+  const tokens = useAppSelector((state) => state.nfts);
 
   const claimChecker = async (
     tokenId: string,
@@ -163,35 +163,53 @@ const Dashboard: React.FC = () => {
   };
 
   const getClaimAmount = useCallback(
-    async (tokens: any, address: string) => {
+    async (tokens: any, address: string, stakingAddress: string) => {
       if (address && tokens) {
-        const rewards = await runQuery(Contracts.stakingContracts.genisis, {
+        const rewards = await runQuery(stakingAddress, {
           get_claim_amount: {
             id: tokens,
             address: address,
           },
         });
-        setRewardsAirdrop(rewards);
+        setRewardsAirdrop((prev) => ({
+          ...prev,
+          [stakingAddress]: rewards,
+        }));
       }
     },
     [runQuery]
   );
 
   useEffect(() => {
-    if (account && tokens) {
-      getClaimAmount(tokens.tokens, account.address);
+    if (account && tokens[Contracts.nftContracts.genisis]) {
+      getClaimAmount(
+        tokens[Contracts.nftContracts.genisis].tokens,
+        account.address,
+        Contracts.stakingContracts.genisis
+      );
+    }
+    if (account && tokens[Contracts.nftContracts.martians]) {
+      getClaimAmount(
+        tokens[Contracts.nftContracts.martians].tokens,
+        account.address,
+        Contracts.stakingContracts.martians
+      );
     }
   }, [runQuery, account, tokens, getClaimAmount]);
 
-  const handleClaimAirdrop = async () => {
-    if (!account || !tokens) return;
+  const handleClaimAirdrop = async (
+    nftAddress: string,
+    stakingAddress: string
+  ) => {
+    const crrTokens = tokens[nftAddress];
+    if (!account || !crrTokens) return;
 
-    await runExecute(Contracts.stakingContracts.genisis, {
+    await runExecute(stakingAddress, {
       claim_reward: {
-        token_id: tokens.tokens,
+        token_id: crrTokens.tokens,
       },
     });
-    getClaimAmount(tokens.tokens, account.address);
+    getClaimAmount(crrTokens.tokens, account.address, stakingAddress);
     toast.success("Successfully claimed!");
   };
 
@@ -262,15 +280,36 @@ const Dashboard: React.FC = () => {
           </AirDropSubTitle>
           <ClaimButtonContainer>
             <ClaimButton
-              disabled={!account || !Number(rewardsAirdrop)}
-              onClick={handleClaimAirdrop}
+              disabled={
+                !account ||
+                !Number(rewardsAirdrop[Contracts.stakingContracts.genisis])
+              }
+              onClick={() =>
+                handleClaimAirdrop(
+                  Contracts.nftContracts.genisis,
+                  Contracts.stakingContracts.genisis
+                )
+              }
             >
               {/* {`Claim ${
                 rewardsAirdrop ? Number(rewardsAirdrop) / 1e6 : ""
               } $PUNK Token`} */}
               $PUNK GENESIS
             </ClaimButton>
-            <ClaimButton>$PUNK MARTIANS</ClaimButton>
+            <ClaimButton
+              disabled={
+                !account ||
+                !Number(rewardsAirdrop[Contracts.stakingContracts.martians])
+              }
+              onClick={() =>
+                handleClaimAirdrop(
+                  Contracts.nftContracts.martians,
+                  Contracts.nftContracts.martians
+                )
+              }
+            >
+              $PUNK MARTIANS
+            </ClaimButton>
           </ClaimButtonContainer>
         </AirDropContent>
         {!isMobile && <AirDropImage />}
