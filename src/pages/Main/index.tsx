@@ -1,5 +1,5 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import React, { createContext, useEffect, useState } from "react";
+import { useAppDispatch } from "../../app/hooks";
 import { Contracts } from "../../constant/config";
 import useContract from "../../hooks/useContract";
 import Dashboard from "./components/Dashboard";
@@ -11,20 +11,23 @@ import { Wrapper, MainContent } from "./styled";
 import { PAGES } from "../../constant/pages";
 import { updateElementViewState } from "../../app/elementViewStateSlice";
 
+import punksRarityData from "../../rank_reduce/junopunks.json";
+import punksRarityData1 from "../../rank_reduce/junopunks2.json";
+import ClaimChecker from "./components/ClaimChecker";
+
 export const CurrentTimeContext = createContext({
   currentTime: Number(new Date()),
 });
 
 const Main: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(Number(new Date()));
-  const [tokens, setTokens] = useState<any>();
-  const account = useAppSelector((state) => state.accounts.keplr);
+  // const account = useAppSelector((state) => state.accounts.keplr);
   const dispatch = useAppDispatch();
   const { runQuery } = useContract();
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const currentTime = await runQuery(Contracts.stakingContract, {
+      const currentTime = await runQuery(Contracts.stakingContracts.genisis, {
         get_current_time: {},
       });
       setCurrentTime(currentTime ? currentTime * 1000 : Number(new Date()));
@@ -45,35 +48,46 @@ const Main: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchNfts = useCallback(
-    async (address: string) => {
-      if (address) {
-        const tokens = await runQuery(Contracts.nftContract, {
-          tokens: {
-            owner: address,
-            limit: 30,
-          },
-        });
-        setTokens(tokens);
-      }
-    },
-    [runQuery]
-  );
-
-  useEffect(() => {
-    if (account) {
-      fetchNfts(account.address);
-    }
-  }, [runQuery, account, fetchNfts]);
+  // useEffect(() => {
+  //   if (account) {
+  //     fetchNfts(account.address);
+  //   }
+  // }, [runQuery, account, fetchNfts]);
 
   return (
     <CurrentTimeContext.Provider value={{ currentTime }}>
       <Wrapper>
         <Sidebar />
         <MainContent id={PAGES.MAINCONTENT}>
-          <Dashboard tokens={tokens} />
+          <Dashboard />
+          <ClaimChecker />
           {/* <Token /> */}
-          <NFTs tokens={tokens} fetchNfts={fetchNfts} />
+          <NFTs
+            title="Genesis PUNK NFT"
+            nftName="Genesis"
+            options={{
+              nftAddress: Contracts.nftContracts.genisis,
+              stakingAddress: Contracts.stakingContracts.genisis,
+              marketplaceAddress: Contracts.marketplaceContracts.genisis,
+              rarityData: punksRarityData,
+              totalCount: 500,
+              imageBaseUrl:
+                "https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb",
+            }}
+          />
+          <NFTs
+            title="Martians PUNK NFT"
+            nftName="Martians"
+            options={{
+              nftAddress: Contracts.nftContracts.martians,
+              stakingAddress: Contracts.stakingContracts.martians,
+              marketplaceAddress: Contracts.marketplaceContracts.martians,
+              rarityData: punksRarityData1,
+              totalCount: 260,
+              imageBaseUrl:
+                "https://hopegalaxy.mypinata.cloud/ipfs/QmWFWZh2cqGPrCpsMeqvsxrjZjKz8WckbuRmmq9hRAXfFe",
+            }}
+          />
         </MainContent>
       </Wrapper>
     </CurrentTimeContext.Provider>

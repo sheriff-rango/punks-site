@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 
 import { formatDurationTime } from "../../utils/formatTime";
 import useContract from "../../hooks/useContract";
-import { Contracts } from "../../constant/config";
 
 import {
   NFTItemWrapper,
@@ -21,6 +20,8 @@ import {
   NFTItemTransferAddress,
   RarityRankContainer,
   RarityRankContent,
+  NoNFTsWrapper,
+  CoinIcon,
   // JunoWalletIndicator,
 } from "./styled";
 import { useAppSelector } from "../../app/hooks";
@@ -32,6 +33,11 @@ export interface NFTItemProps {
   fetchNFT?: any;
   currentTime: number;
   rarityRanks: any;
+  options: {
+    nftAddress: string;
+    stakingAddress: string;
+    imageBaseUrl: string;
+  };
 }
 
 export const NFTItemStatus = {
@@ -59,6 +65,8 @@ const getTokenIdNumber = (id: string): string => {
   return id.split(".").pop() || "";
 };
 
+export const NoNFTs = () => <NoNFTsWrapper>No NFTs</NoNFTsWrapper>;
+
 export default function NFTItem({
   id,
   item,
@@ -66,6 +74,7 @@ export default function NFTItem({
   fetchNFT,
   currentTime,
   rarityRanks,
+  options,
 }: NFTItemProps) {
   const [sendingTx, setSendingTx] = useState(false);
   const [transferTarget, setTransferTarget] = useState("");
@@ -75,9 +84,7 @@ export default function NFTItem({
   const tokenIdNumber = Number(getTokenIdNumber(item.token_id) || 0);
   const tokenRarityRank = rarityRanks?.[tokenIdNumber];
 
-  const url = `https://hopegalaxy.mypinata.cloud/ipfs/Qmbsmj4q3cAZdqkFvFBq4zBrHtzXf4FzDTMQQm9MHcB2yb/${
-    id.split(".").pop() || ""
-  }.png`;
+  const url = `${options.imageBaseUrl}/${id.split(".").pop() || ""}.png`;
   const price = item?.list_price || {};
   const hasPrice = !!price.amount && !!price.denom;
 
@@ -135,9 +142,9 @@ export default function NFTItem({
     if (nftStatus === NFTItemStatus.AVAILABLE) {
       try {
         setSendingTx(true);
-        await runExecute(Contracts.nftContract, {
+        await runExecute(options.nftAddress, {
           send_nft: {
-            contract: Contracts.stakingContract,
+            contract: options.stakingAddress,
             token_id: item.token_id,
             msg: btoa("staking"),
           },
@@ -154,7 +161,7 @@ export default function NFTItem({
     } else if (nftStatus === NFTItemStatus.STAKED) {
       try {
         setSendingTx(true);
-        await runExecute(Contracts.stakingContract, {
+        await runExecute(options.stakingAddress, {
           unstake_nft: {
             token_id: item.token_id,
           },
@@ -171,7 +178,7 @@ export default function NFTItem({
     } else if (nftStatus === NFTItemStatus.UNSTAKED && isPassedPeriod) {
       try {
         setSendingTx(true);
-        await runExecute(Contracts.stakingContract, {
+        await runExecute(options.stakingAddress, {
           withdraw_nft: {
             token_id: item.token_id,
           },
@@ -192,7 +199,7 @@ export default function NFTItem({
     if (transferDisabled || !transferTarget) return;
     try {
       setSendingTx(true);
-      await runExecute(Contracts.nftContract, {
+      await runExecute(options.nftAddress, {
         transfer_nft: {
           recipient: transferTarget,
           token_id: item.token_id,
@@ -248,12 +255,19 @@ export default function NFTItem({
           {/* <NFTItemInfo>Juno Punks</NFTItemInfo> */}
           <NFTItemInfo>{item.token_id}</NFTItemInfo>
         </div>
-        <NFTItemInfo>
-          {hasPrice && +price.amount > 0
-            ? `${price.amount / 1e6} ${
-                price.denom === NFTPriceType.HOPE ? "HOPE" : "JUNO"
-              }`
-            : ""}
+        <NFTItemInfo fontSize="16px">
+          {hasPrice && +price.amount > 0 && (
+            <>
+              <CoinIcon
+                alt=""
+                src={`/images/coin-images/${price.denom.replace(
+                  /\//g,
+                  ""
+                )}.png`}
+              />
+              {price.amount / 1e6}
+            </>
+          )}
         </NFTItemInfo>
       </NFTItemInfoContainer>
       <NFTItemOperationContainer disabled={transferDisabled}>
